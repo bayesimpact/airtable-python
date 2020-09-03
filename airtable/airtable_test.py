@@ -1,5 +1,6 @@
 
 import airtable
+import json
 import mock
 import requests
 import unittest
@@ -151,6 +152,41 @@ class TestAirtable(unittest.TestCase):
     def test_invalid_delete(self):
         with self.assertRaises(airtable.IsNotString):
             self.airtable.delete(FAKE_TABLE_NAME, 123)
+
+    @mock.patch.object(requests, 'request')
+    def test_create(self, mock_request):
+        record = {
+            'field1': 'value1',
+            'field2': 'value2',
+        }
+        self.airtable.create(FAKE_TABLE_NAME, record)
+        mock_request.assert_called_once()
+        unused_args, kwargs = mock_request.call_args
+        sent_data = json.loads(kwargs['data'])
+        self.assertEqual(
+            {'fields': {'field1': 'value1', 'field2': 'value2'}},
+            sent_data)
+
+    @mock.patch.object(requests, 'request')
+    def test_batch_create(self, mock_request):
+        records = [
+            {
+                'field1': 'value1',
+                'field2': 'value2',
+            },
+            {
+                'field1': 'value3',
+                'field2': 'value4',
+            },
+        ]
+        self.airtable.create(FAKE_TABLE_NAME, records)
+        mock_request.assert_called_once()
+        unused_args, kwargs = mock_request.call_args
+        sent_data = json.loads(kwargs['data'])
+        self.assertEqual([
+            {'fields': {'field1': 'value1', 'field2': 'value2'}},
+            {'fields': {'field1': 'value3', 'field2': 'value4'}},
+        ], sent_data)
 
 if __name__ == '__main__':
     unittest.main()

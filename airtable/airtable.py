@@ -137,7 +137,10 @@ class Airtable(object):
 
     def create(self, table_name, data):
         if check_string(table_name):
-            payload = create_payload(data)
+            if isinstance(data, list):
+                payload = [create_payload(record) for record in data]
+            else:
+                payload = create_payload(data)
             return self.__request('POST', table_name,
                                   payload=json.dumps(payload))
 

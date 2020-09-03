@@ -61,9 +61,15 @@ class Airtable(object):
             -> _Record:
         ...
 
+    @typing.overload
     def create(self, table_name: str, data: typing.Dict[str, typing.Any]) -> _Record:
         ...
- 
+
+    @typing.overload
+    def create(self, table_name: str, data: typing.List[typing.Dict[str, typing.Any]]) \
+            -> typing.List[_Record]:
+        ...
+
     def update(self, table_name: str, record_id: str, data: typing.Dict[str, typing.Any]) -> _Record:
         ...
 
