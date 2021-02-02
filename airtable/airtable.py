@@ -109,7 +109,7 @@ class Airtable(object):
 
     def get(
             self, table_name, record_id=None, limit=0, offset=None,
-            filter_by_formula=None, view=None, max_records=0, fields=[]):
+            filter_by_formula=None, view=None, max_records=0, fields=()):
         params = {}
         if check_string(record_id):
             url = posixpath.join(table_name, record_id)
@@ -125,7 +125,7 @@ class Airtable(object):
                 params.update({'view': view})
             if max_records and check_integer(max_records):
                 params.update({'maxRecords': max_records})
-            if fields and type(fields) is list:
+            if fields and isinstance(fields, tuple):
                 for field in fields:
                     check_string(field)
                 params.update({'fields': fields})
@@ -134,7 +134,7 @@ class Airtable(object):
 
     def iterate(
             self, table_name, batch_size=0, filter_by_formula=None,
-            view=None, max_records=0, fields=[]):
+            view=None, max_records=0, fields=()):
         """Iterate over all records of a table.
 
         Args:
@@ -217,13 +217,13 @@ class Table(object):
 
     def get(
             self, record_id=None, limit=0, offset=None,
-            filter_by_formula=None, view=None, max_records=0, fields=[]):
+            filter_by_formula=None, view=None, max_records=0, fields=()):
         return self._client.get(
             self.table_name, record_id, limit, offset, filter_by_formula, view, max_records, fields)
 
     def iterate(
             self, batch_size=0, filter_by_formula=None,
-            view=None, max_records=0, fields=[]):
+            view=None, max_records=0, fields=()):
         return self._client.iterate(
             self.table_name, batch_size, filter_by_formula, view, max_records, fields)
 
